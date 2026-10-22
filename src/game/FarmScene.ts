@@ -5,6 +5,10 @@ import { ITEMS } from '../data/gameData';
 import type { Season } from '../types/game';
 import { soundManager } from '../utils/sound';
 
+// Bridge React HUD ↔ Phaser: App.tsx/HUD.tsx đọc scene từ window.__FARM_SCENE__ (contract 2 phía, đã kiểm tra kiểu tại đây).
+type FarmSceneWindow = Window & { __FARM_SCENE__?: FarmScene };
+const sceneWindow = window as unknown as FarmSceneWindow; // window là DOM node well-known, không kiểm tra runtime được
+
 export const TILE_SIZE = 32;
 export const MAP_COLS = 56;
 export const MAP_ROWS = 40;
@@ -238,6 +242,12 @@ export class FarmScene extends Phaser.Scene {
 
   public create() {
     PixelArtGenerator.registerAllTextures(this);
+
+    // Gán scene vào window để React HUD (D-Pad, nút Thao Tác, sync khi vào game) điều khiển được
+    sceneWindow.__FARM_SCENE__ = this;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      sceneWindow.__FARM_SCENE__ = undefined;
+    });
 
     const state = gameStore.getState();
     this.currentRenderedSeason = state.season;

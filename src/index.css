@@ -55,6 +55,7 @@ body,
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* iOS Safari: bằng viewport thực (không bị thanh trình duyệt che底部) */
   overflow: hidden;
 }
 
@@ -297,7 +298,7 @@ body,
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 14px calc(10px + env(safe-area-inset-bottom, 0px));
 }
 
 .wood-panel {
@@ -312,9 +313,10 @@ body,
 
 .hud-top-bar {
   display: flex;
+  flex-wrap: wrap; /* Màn hẹp: cuộn cụm icon xuống hàng 2 thay vì cắt mất chip Vàng */
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px 10px;
   pointer-events: none;
 }
 
@@ -568,8 +570,8 @@ body,
 
 .dpad-cluster {
   display: grid;
-  grid-template-columns: repeat(3, 42px);
-  grid-template-rows: repeat(2, 42px);
+  grid-template-columns: repeat(3, 46px);
+  grid-template-rows: repeat(2, 46px);
   gap: 4px;
   pointer-events: auto;
 }
@@ -582,6 +584,10 @@ body,
   font-size: 15px;
   font-weight: 800;
   cursor: pointer;
+  touch-action: none; /* Browser không được hủy gesture khi giữ nút di chuyển */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .dpad-btn.up {
@@ -620,6 +626,8 @@ body,
   background: linear-gradient(180deg, #56b85a 0%, #2e7d32 100%);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (max-width: 1024px) {
@@ -1274,6 +1282,23 @@ body,
 }
 
 /* TƯƠNG THÍCH MOBILE & MÀN HÌNH NHỎ */
+@media (max-width: 600px) {
+  .hud-layer {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .hud-status-pill {
+    font-size: 11px;
+    gap: 6px;
+    padding: 5px 8px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .hud-icon-cluster {
+    gap: 4px;
+  }
+}
+
 @media (max-width: 768px) {
   .title-icon-showcase {
     grid-template-columns: repeat(2, 1fr);

@@ -42,6 +42,14 @@ export const HUD: React.FC<HUDProps> = ({ state, activeModal = null, onOpenModal
     }
   };
 
+  // 4 nút D-Pad dùng chung: capture pointer khi giữ để finger di chuyển nhẹ
+  // hoặc nhấc ra ngoài vẫn nhận đúng onPointerUp/Cancel (tránh kẹt joystick).
+  const handleDpadDown = (dx: number, dy: number) => (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setJoystick(dx, dy);
+  };
+  const handleDpadRelease = () => setJoystick(0, 0); // 8 điểm gọi (Up/Cancel × 4 nút) phải reset đồng loạt
+
   const triggerPrimaryAction = () => {
     const scene = (window as unknown as { __FARM_SCENE__?: FarmScene }).__FARM_SCENE__;
     if (scene) {
@@ -213,36 +221,36 @@ export const HUD: React.FC<HUDProps> = ({ state, activeModal = null, onOpenModal
             <button
               type="button"
               className="dpad-btn up"
-              onPointerDown={() => setJoystick(0, -1)}
-              onPointerUp={() => setJoystick(0, 0)}
-              onPointerLeave={() => setJoystick(0, 0)}
+              onPointerDown={handleDpadDown(0, -1)}
+              onPointerUp={handleDpadRelease}
+              onPointerCancel={handleDpadRelease}
             >
               ▲
             </button>
             <button
               type="button"
               className="dpad-btn left"
-              onPointerDown={() => setJoystick(-1, 0)}
-              onPointerUp={() => setJoystick(0, 0)}
-              onPointerLeave={() => setJoystick(0, 0)}
+              onPointerDown={handleDpadDown(-1, 0)}
+              onPointerUp={handleDpadRelease}
+              onPointerCancel={handleDpadRelease}
             >
               ◀
             </button>
             <button
               type="button"
               className="dpad-btn right"
-              onPointerDown={() => setJoystick(1, 0)}
-              onPointerUp={() => setJoystick(0, 0)}
-              onPointerLeave={() => setJoystick(0, 0)}
+              onPointerDown={handleDpadDown(1, 0)}
+              onPointerUp={handleDpadRelease}
+              onPointerCancel={handleDpadRelease}
             >
               ▶
             </button>
             <button
               type="button"
               className="dpad-btn down"
-              onPointerDown={() => setJoystick(0, 1)}
-              onPointerUp={() => setJoystick(0, 0)}
-              onPointerLeave={() => setJoystick(0, 0)}
+              onPointerDown={handleDpadDown(0, 1)}
+              onPointerUp={handleDpadRelease}
+              onPointerCancel={handleDpadRelease}
             >
               ▼
             </button>
