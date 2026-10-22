@@ -572,7 +572,174 @@ export const GameModals: React.FC<ModalsProps> = ({
     );
   }
 
-  // 5. BÁO CÁO TỔNG KẾT NGÀY MỚI (DAILY REPORT MODAL)
+  // 5. SỔ TAY DÂN LÀNG (SOCIAL NOTEBOOK — CHỈ XEM THÔNG TIN)
+  if (activeModal === 'social') {
+    const npcList = Object.values(state.npcs);
+    const talkedCount = npcList.filter((n) => n.talkedToday).length;
+    const giftedCount = npcList.filter((n) => n.giftedToday).length;
+
+    return (
+      <div className="modal-backdrop" onClick={onClose}>
+        <div
+          className="modal-window modal-large pixel-wood-panel"
+          id="modal-social"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="modal-header">
+            <h2>👥 Sổ Tay Dân Làng</h2>
+            <button id="btn-close-modal" className="pixel-close-btn" onClick={onClose}>
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="inventory-stats-strip">
+            <span>
+              👥 Đã trò chuyện hôm nay: <strong>{talkedCount}/{npcList.length}</strong>
+            </span>
+            <span>
+              💝 Đã tặng quà hôm nay: <strong>{giftedCount}/{npcList.length}</strong>
+            </span>
+          </div>
+
+          <p className="modal-hint">
+            Sổ tay chỉ để tra cứu. Muốn trò chuyện hoặc tặng quà, hãy bấm vào dân làng ngoài bản đồ.
+          </p>
+
+          <section className="social-section">
+            <div className="social-grid">
+              {npcList.map((npc) => (
+                <article key={npc.id} className="social-card" id={`social-npc-${npc.id}`}>
+                  <div className="social-card-top">
+                    <div className="social-avatar">
+                      <PixelIcon iconKey={npc.portraitKey} size={44} />
+                    </div>
+                    <div className="social-card-info">
+                      <div className="social-name">{npc.name}</div>
+                      <div className="social-role">{npc.role}</div>
+                      <div className="social-hearts">
+                        <Heart size={13} fill="#ff4081" color="#ff4081" />
+                        <span>{npc.hearts} / 10 tim</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="social-chip-row">
+                    <span className={`social-chip ${npc.talkedToday ? 'done' : 'todo'}`}>
+                      {npc.talkedToday ? 'Đã trò chuyện' : 'Chưa trò chuyện'}
+                    </span>
+                    {npc.giftedToday && <span className="social-chip done">Đã tặng quà</span>}
+                  </div>
+
+                  <div className="social-favorites">
+                    💝 <strong>Quà yêu thích:</strong>{' '}
+                    {npc.favoriteItems
+                      .map((fid) => ITEMS[fid]?.name)
+                      .filter(Boolean)
+                      .join(', ')}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className="modal-footer-center">
+            <button id="btn-close-social" className="pixel-btn pixel-btn-primary" onClick={onClose}>
+              <X size={18} />
+              <span>Đóng Sổ Tay</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 6. SỔ TAY VẬT NUÔI (ANIMALS NOTEBOOK — CHỈ XEM THÔNG TIN)
+  if (activeModal === 'animals') {
+    const fedCount = state.animals.filter((a) => a.fedToday).length;
+    const readyProducts = state.animals.filter((a) => a.hasProduct).length;
+
+    return (
+      <div className="modal-backdrop" onClick={onClose}>
+        <div
+          className="modal-window modal-large pixel-wood-panel"
+          id="modal-animals"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="modal-header">
+            <h2>🐾 Sổ Tay Vật Nuôi</h2>
+            <button id="btn-close-modal" className="pixel-close-btn" onClick={onClose}>
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="inventory-stats-strip">
+            <span>
+              🍽️ Đã cho ăn hôm nay: <strong>{fedCount}/{state.animals.length}</strong>
+            </span>
+            <span>
+              🥚 Sản phẩm chờ thu hoạch: <strong>{readyProducts}/{state.animals.length}</strong>
+            </span>
+          </div>
+
+          <p className="modal-hint">
+            Sổ tay chỉ để tra cứu. Muốn cho ăn, vuốt ve hoặc thu sản phẩm, hãy bấm vào vật nuôi ở Khu Đồng Cỏ.
+          </p>
+
+          {state.animals.length === 0 ? (
+            <p className="modal-hint">Chưa có vật nuôi nào trong nông trại.</p>
+          ) : (
+            <section className="social-section">
+              <div className="social-grid">
+                {state.animals.map((animal) => (
+                  <article key={animal.id} className="social-card" id={`social-animal-${animal.id}`}>
+                    <div className="social-card-top">
+                      <div className="social-avatar social-animal-emoji">
+                        {animal.type === 'chicken' ? '🐔' : '🐄'}
+                      </div>
+                      <div className="social-card-info">
+                        <div className="social-name">{animal.name}</div>
+                        <div className="social-role">
+                          {animal.type === 'chicken' ? 'Gà đẻ trứng' : 'Bò sữa'}
+                        </div>
+                        <div className="social-hearts">Thân thiết {Math.round(animal.affection)}/100</div>
+                      </div>
+                    </div>
+
+                    <div
+                      className="social-affection-track"
+                      title={`Độ thân thiết ${Math.round(animal.affection)}/100`}
+                    >
+                      <div
+                        className="social-affection-fill"
+                        style={{ width: `${Math.round(animal.affection)}%` }}
+                      />
+                    </div>
+
+                    <div className="social-chip-row">
+                      <span className={`social-chip ${animal.fedToday ? 'done' : 'todo'}`}>
+                        {animal.fedToday ? 'Đã cho ăn' : 'Đang đói'}
+                      </span>
+                      {animal.pettedToday && <span className="social-chip done">Đã vuốt ve</span>}
+                      {animal.hasProduct && <span className="social-chip ready">Có sản phẩm</span>}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <div className="modal-footer-center">
+            <button id="btn-close-animals" className="pixel-btn pixel-btn-primary" onClick={onClose}>
+              <X size={18} />
+              <span>Đóng Sổ Tay</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 7. BÁO CÁO TỔNG KẾT NGÀY MỚI (DAILY REPORT MODAL)
   if (activeModal === 'daily_report') {
     const report = (modalPayload as DailyReport) || gameStore.lastDailyReport;
     return (
@@ -621,7 +788,7 @@ export const GameModals: React.FC<ModalsProps> = ({
     );
   }
 
-  // 6. CẨM NANG HƯỚNG DẪN CHƠI (GUIDE MODAL)
+  // 8. CẨM NANG HƯỚNG DẪN CHƠI (GUIDE MODAL)
   if (activeModal === 'guide') {
     return (
       <div className="modal-backdrop" onClick={onClose}>
@@ -680,7 +847,7 @@ export const GameModals: React.FC<ModalsProps> = ({
     );
   }
 
-  // 7. CÀI ĐẶT, ÂM THANH & LƯU GAME (SETTINGS MODAL)
+  // 9. CÀI ĐẶT, ÂM THANH & LƯU GAME (SETTINGS MODAL)
   if (activeModal === 'settings') {
     const { settings } = state;
     return (

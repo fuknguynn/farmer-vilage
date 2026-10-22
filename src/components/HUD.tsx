@@ -174,7 +174,7 @@ export const HUD: React.FC<HUDProps> = ({ state, activeModal = null, onOpenModal
           <button
             id="btn-open-social"
             type="button"
-            title="Sổ Tay Dân Làng & Vật Nuôi"
+            title="Sổ Tay Dân Làng"
             aria-label="Dân Làng"
             className={`hud-icon-btn ${activeModal === 'social' ? 'active' : ''}`}
             onClick={() => {
@@ -182,20 +182,23 @@ export const HUD: React.FC<HUDProps> = ({ state, activeModal = null, onOpenModal
               onOpenModal(activeModal === 'social' ? null : 'social');
             }}
           >
-            <PixelIcon iconKey="ui_heart" size={20} />
+            <PixelIcon iconKey="ui_social" size={20} />
             <span className="hud-icon-label">Dân làng</span>
           </button>
 
           <button
-            id="btn-sleep-day"
+            id="btn-open-animals"
             type="button"
-            title="Nghỉ ngơi qua ngày mới"
-            aria-label="Qua Ngày"
-            className="hud-icon-btn sleep-btn"
-            onClick={() => gameStore.sleepAndAdvanceDay()}
+            title="Sổ Tay Vật Nuôi"
+            aria-label="Vật Nuôi"
+            className={`hud-icon-btn ${activeModal === 'animals' ? 'active' : ''}`}
+            onClick={() => {
+              soundManager.playSfx('click');
+              onOpenModal(activeModal === 'animals' ? null : 'animals');
+            }}
           >
-            <PixelIcon iconKey="ui_bed" size={20} />
-            <span className="hud-icon-label">Qua ngày</span>
+            <PixelIcon iconKey="ui_paw" size={20} />
+            <span className="hud-icon-label">Vật nuôi</span>
           </button>
 
           <button

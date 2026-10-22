@@ -93,15 +93,20 @@ export class PixelArtGenerator {
         break;
       }
       case 'icon_scythe': {
+        // Cán dài + lưỡi liềm cong
         for (let i = 0; i < 14; i++) {
-          p(4 + i, 19 - i, 3, 3, out);
-          p(5 + i, 19 - i, 1, 2, '#8d5128');
+          p(3 + i, 20 - i, 3, 3, out);
+          p(4 + i, 20 - i, 1, 2, '#a86434');
         }
-        p(9, 3, 11, 4, out);
-        p(10, 4, 9, 2, '#cfd8dc');
-        p(10, 4, 8, 1, '#ffffff');
-        p(7, 5, 4, 4, out);
-        p(8, 6, 2, 2, '#90a4ae');
+        const scytheBlade: Array<[number, number, number]> = [
+          [3, 14, 20], [4, 12, 20], [5, 10, 19], [6, 8, 16], [7, 6, 12], [8, 5, 9],
+        ];
+        for (const [y, x0, x1] of scytheBlade) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of scytheBlade) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#cfd8dc');
+        }
+        p(15, 4, 4, 1, '#ffffff');
+        p(11, 6, 4, 1, '#b0bec5');
         break;
       }
       case 'icon_rod': {
@@ -116,12 +121,16 @@ export class PixelArtGenerator {
       }
       case 'icon_axe': {
         for (let i = 0; i < 13; i++) {
-          p(4 + i, 19 - i, 3, 3, out);
-          p(5 + i, 19 - i, 2, 2, '#9c5b2e');
+          p(4 + i, 20 - i, 3, 3, out);
+          p(5 + i, 20 - i, 1, 2, '#a86434');
         }
-        this.outlinedBox(ctx, 12, 3, 9, 9, '#90a4ae', out, '#eceff1');
-        p(18, 4, 2, 7, '#ffffff');
-        p(13, 9, 5, 2, '#607d8b');
+        // Đầu rìu thép: lưỡi sáng bên trái, lỗ tra cán ở giữa
+        p(12, 3, 10, 9, out);
+        p(13, 4, 8, 7, '#90a4ae');
+        p(12, 5, 2, 5, '#cfd8dc');
+        p(20, 4, 1, 7, '#78909c');
+        p(15, 7, 4, 2, '#546e7a');
+        p(14, 4, 3, 1, '#eceff1');
         break;
       }
       case 'icon_seed_turnip':
@@ -186,6 +195,47 @@ export class PixelArtGenerator {
         p(7, 9, 3, 3, '#ffcdd2');
         break;
       }
+      case 'icon_cauliflower':
+      case 'icon_crop_cauliflower': {
+        // Súp lơ trắng: đầu trắng dạng vòm nhiều múi + lá xanh ôm gốc
+        p(11, 12, 2, 5, '#2e7d32');
+        p(7, 12, 2, 2, '#2e7d32');
+        p(5, 13, 2, 2, '#43a047');
+        p(3, 14, 2, 2, '#4caf50');
+        p(4, 14, 1, 1, '#81c784');
+        p(15, 12, 2, 2, '#2e7d32');
+        p(17, 13, 2, 2, '#43a047');
+        p(19, 14, 3, 2, '#4caf50');
+        p(19, 14, 1, 1, '#a5d6a7');
+        const head: Array<[number, number, number]> = [
+          [3, 9, 14],
+          [4, 7, 16],
+          [5, 6, 17],
+          [6, 5, 18],
+          [7, 5, 18],
+          [8, 5, 18],
+          [9, 6, 17],
+          [10, 7, 16],
+          [11, 9, 14]
+        ];
+        const inside = (x: number, y: number) => head.some(([ry, a, b]) => ry === y && x >= a && x <= b);
+        for (const [y, a, b] of head) p(a, y, b - a + 1, 1, '#f5f5f0');
+        for (let y = 2; y <= 12; y++) {
+          for (let x = 0; x < 24; x++) {
+            if (inside(x, y)) continue;
+            if (inside(x - 1, y) || inside(x + 1, y) || inside(x, y - 1) || inside(x, y + 1)) {
+              p(x, y, 1, 1, out);
+            }
+          }
+        }
+        p(8, 4, 3, 2, '#ffffff');
+        p(6, 6, 2, 2, '#ffffff');
+        p(15, 7, 2, 3, '#e0e0d1');
+        p(12, 9, 3, 2, '#e0e0d1');
+        p(11, 5, 1, 4, '#e0e0d1');
+        p(13, 5, 1, 2, '#e0e0d1');
+        break;
+      }
       case 'icon_corn':
       case 'icon_crop_corn': {
         this.outlinedBox(ctx, 4, 9, 5, 12, '#43a047', out, '#81c784');
@@ -218,10 +268,79 @@ export class PixelArtGenerator {
         p(13, 9, 2, 2, '#ffb300');
         break;
       }
-      case 'icon_egg': {
-        this.outlinedBox(ctx, 6, 4, 12, 16, '#fff8e1', out, '#ffffff');
-        p(7, 15, 10, 4, '#ffe0b2');
-        p(8, 7, 3, 3, '#ffffff');
+      case 'icon_egg':
+      case 'icon_egg_brown': {
+        // Trứng gà trắng / trứng nâu — thân tròn bầu dục
+        const shell = key === 'icon_egg_brown' ? '#d7a86e' : '#fff8e1';
+        const shellHi = key === 'icon_egg_brown' ? '#f3d5a5' : '#ffffff';
+        const shellShade = key === 'icon_egg_brown' ? '#b97a3e' : '#ffe0b2';
+        const egg: Array<[number, number, number]> = [
+          [3, 9, 14], [4, 7, 16], [5, 6, 17],
+          [6, 5, 18], [7, 5, 18], [8, 5, 18], [9, 5, 18], [10, 5, 18],
+          [11, 5, 18], [12, 5, 18], [13, 5, 18], [14, 5, 18], [15, 5, 18],
+          [16, 5, 18], [17, 6, 17], [18, 7, 16], [19, 9, 14],
+        ];
+        for (const [y, x0, x1] of egg) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of egg) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, shell);
+        }
+        p(7, 6, 3, 3, shellHi);
+        p(8, 15, 9, 2, shellShade);
+        if (key === 'icon_egg_brown') p(11, 9, 2, 2, '#b97a3e');
+        break;
+      }
+      case 'icon_cheese': {
+        // Miếng phô mai vàng có lỗ (sản phẩm từ bò sữa)
+        const wedge: Array<[number, number, number]> = [
+          [7, 3, 20], [8, 4, 20], [9, 5, 20], [10, 6, 20], [11, 7, 20],
+          [12, 8, 20], [13, 9, 20], [14, 10, 20], [15, 11, 20], [16, 12, 20],
+          [17, 13, 20], [18, 14, 20],
+        ];
+        for (const [y, x0, x1] of wedge) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of wedge) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#ffd54f');
+        }
+        p(5, 8, 9, 1, '#ffe082');
+        p(14, 8, 6, 1, '#ffb300');
+        p(7, 11, 2, 2, '#ffb300');
+        p(11, 14, 2, 2, '#ffb300');
+        break;
+      }
+      case 'icon_wool': {
+        // Cuộn len trắng (sản phẩm từ cừu)
+        const ball: Array<[number, number, number]> = [
+          [5, 8, 16], [6, 6, 18], [7, 5, 19], [8, 4, 20],
+          [9, 3, 21], [10, 3, 21], [11, 3, 21], [12, 3, 21], [13, 3, 21],
+          [14, 3, 21], [15, 4, 20], [16, 5, 19], [17, 7, 17],
+        ];
+        for (const [y, x0, x1] of ball) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of ball) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#f5f5f5');
+        }
+        p(6, 12, 5, 1, '#cfd8dc');
+        p(8, 9, 5, 1, '#cfd8dc');
+        p(11, 14, 5, 1, '#cfd8dc');
+        p(14, 8, 1, 4, '#cfd8dc');
+        p(7, 7, 3, 2, '#ffffff');
+        p(12, 17, 6, 1, '#e0e0e0');
+        break;
+      }
+      case 'icon_shovel': {
+        // Xẻng xúc đất — cán gỗ + lưỡi thép
+        for (let i = 0; i < 13; i++) {
+          p(4 + i, 20 - i, 3, 3, out);
+          p(5 + i, 20 - i, 1, 2, '#a86434');
+        }
+        const blade: Array<[number, number, number]> = [
+          [2, 13, 22], [3, 12, 23], [4, 12, 23], [5, 12, 23], [6, 12, 23],
+          [7, 13, 22], [8, 14, 21], [9, 16, 19],
+        ];
+        for (const [y, x0, x1] of blade) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of blade) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#b0bec5');
+        }
+        p(14, 3, 3, 4, '#eceff1');
+        p(15, 6, 6, 1, '#90a4ae');
         break;
       }
       case 'icon_milk': {
@@ -261,19 +380,118 @@ export class PixelArtGenerator {
         break;
       }
       case 'icon_bread': {
-        this.outlinedBox(ctx, 3, 6, 18, 13, '#d88c3a', out, '#ffca7a');
-        p(5, 10, 14, 7, '#f5cba7');
-        p(6, 8, 3, 2, '#8d4918');
-        p(11, 8, 3, 2, '#8d4918');
-        p(16, 8, 2, 2, '#8d4918');
+        // Ổ bánh mì bơ mật ong — vỏ vàng nâu, rạch chéo trên mặt
+        const loaf: Array<[number, number, number]> = [
+          [7, 8, 16], [8, 5, 19], [9, 4, 20],
+          [10, 3, 21], [11, 3, 21], [12, 3, 21], [13, 3, 21], [14, 3, 21], [15, 3, 21],
+          [16, 4, 20], [17, 5, 19], [18, 7, 17],
+        ];
+        for (const [y, x0, x1] of loaf) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of loaf) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#e0a45e');
+        }
+        p(6, 9, 4, 2, '#f7cf9a');
+        p(11, 8, 4, 1, '#f7cf9a');
+        p(5, 11, 5, 1, '#b9772f');
+        p(10, 13, 5, 1, '#b9772f');
+        p(15, 15, 3, 1, '#b9772f');
+        p(6, 16, 12, 1, '#c98a3f');
         break;
       }
       case 'icon_tea': {
-        this.outlinedBox(ctx, 5, 8, 13, 12, '#66bb6a', out, '#b9f6ca');
-        this.outlinedBox(ctx, 17, 10, 4, 7, '#43a047', out);
-        p(7, 10, 9, 3, '#2e7d32');
-        p(9, 3, 2, 3, '#ffffff');
-        p(13, 4, 2, 3, '#ffffff');
+        // Hũ mật ong cho vật phẩm "Mật Ong Hoa Rừng"
+        this.outlinedBox(ctx, 5, 8, 14, 13, '#ffb300', out, '#ffe082');
+        p(6, 17, 12, 3, '#f57f17');
+        this.outlinedBox(ctx, 7, 3, 10, 5, '#8d6e63', out, '#a1887f');
+        this.outlinedBox(ctx, 8, 11, 8, 5, '#fff8e1', out, '#ffffff');
+        p(10, 12, 4, 2, '#ffb300');
+        p(11, 12, 2, 1, '#ff6d00');
+        break;
+      }
+      case 'icon_apple': {
+        // Táo đỏ (vật phẩm "Táo Đỏ Rừng Mây") — thân tròn, núm + lá
+        const apple: Array<[number, number, number]> = [
+          [6, 8, 16], [7, 6, 18], [8, 5, 19], [9, 4, 20],
+          [10, 3, 21], [11, 3, 21], [12, 3, 21], [13, 3, 21], [14, 3, 21],
+          [15, 3, 21], [16, 4, 20], [17, 5, 19], [18, 7, 17], [19, 9, 15],
+        ];
+        for (const [y, x0, x1] of apple) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of apple) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#e53935');
+        }
+        p(7, 9, 3, 3, '#ff8a80');
+        p(8, 12, 2, 2, '#ffcdd2');
+        p(14, 14, 5, 3, '#c62828');
+        p(10, 17, 6, 1, '#b71c1c');
+        p(11, 2, 2, 5, '#5d4037');
+        this.outlinedBox(ctx, 13, 3, 6, 3, '#43a047', out, '#81c784');
+        break;
+      }
+      case 'icon_orange': {
+        // Quả cam vàng (vật phẩm "Cam Vàng Mọng Nước") — thân tròn, núm + lá
+        const orange: Array<[number, number, number]> = [
+          [5, 8, 16], [6, 6, 18], [7, 5, 19], [8, 4, 20],
+          [9, 3, 21], [10, 3, 21], [11, 3, 21], [12, 3, 21], [13, 3, 21],
+          [14, 3, 21], [15, 4, 20], [16, 5, 19], [17, 6, 18], [18, 8, 16],
+        ];
+        for (const [y, x0, x1] of orange) p(x0, y, x1 - x0 + 1, 1, out);
+        for (const [y, x0, x1] of orange) {
+          if (x1 - x0 > 2) p(x0 + 1, y, x1 - x0 - 1, 1, '#fb8c00');
+        }
+        p(6, 8, 4, 3, '#ffb74d');
+        p(7, 9, 2, 2, '#ffe0b2');
+        p(13, 13, 5, 4, '#ef6c00');
+        p(9, 15, 1, 1, '#e65100');
+        p(15, 12, 1, 1, '#e65100');
+        p(11, 1, 2, 5, '#5d4037');
+        this.outlinedBox(ctx, 13, 2, 6, 3, '#43a047', out, '#81c784');
+        break;
+      }
+      case 'icon_berry': {
+        // Chùm quả mọng rừng (vật phẩm "Quả Mọng Rừng Xanh") — 3 quả tròn
+        const blob = (bx: number, by: number, fill: string, hi: string) => {
+          const pat: Array<[number, number]> = [
+            [2, 4], [1, 6], [0, 8], [0, 8], [0, 8], [1, 6], [2, 4],
+          ];
+          pat.forEach(([inset, w], dy) => p(bx + inset, by + dy, w, 1, out));
+          pat.forEach(([inset, w], dy) => p(bx + inset + 1, by + dy, w - 2, 1, fill));
+          p(bx + 2, by + 1, 3, 2, hi);
+        };
+        p(9, 3, 6, 3, '#2e7d32');
+        p(11, 1, 3, 2, '#43a047');
+        blob(2, 8, '#7b1fa2', '#ce93d8');
+        blob(12, 8, '#8e24aa', '#e1bee7');
+        blob(7, 13, '#6a1b9a', '#ba68c8');
+        break;
+      }
+      case 'icon_mushroom_red':
+      case 'icon_mushroom_brown': {
+        const cap = key === 'icon_mushroom_red' ? '#d32f2f' : '#8d6e63';
+        const capHi = key === 'icon_mushroom_red' ? '#ff5252' : '#a1887f';
+        const capShade = key === 'icon_mushroom_red' ? '#b71c1c' : '#5d4037';
+        this.outlinedBox(ctx, 8, 13, 8, 9, '#ffe0b2', out, '#fff3e0');
+        p(9, 18, 6, 2, '#ffcc80');
+        this.outlinedBox(ctx, 3, 6, 18, 8, cap, out, capHi);
+        p(5, 11, 14, 2, capShade);
+        if (key === 'icon_mushroom_red') {
+          p(6, 8, 3, 2, '#fff8e1');
+          p(13, 8, 3, 2, '#fff8e1');
+          p(10, 10, 2, 1, '#fff8e1');
+        } else {
+          p(6, 8, 3, 1, '#bcaaa4');
+          p(13, 9, 3, 1, '#bcaaa4');
+        }
+        break;
+      }
+      case 'icon_herb': {
+        // Bó thảo mộc xanh (vật phẩm "Thảo Mộc Thanh Lương")
+        p(11, 7, 2, 14, '#2e7d32');
+        this.outlinedBox(ctx, 3, 8, 8, 5, '#43a047', out, '#81c784');
+        this.outlinedBox(ctx, 13, 10, 8, 5, '#4caf50', out, '#a5d6a7');
+        this.outlinedBox(ctx, 8, 3, 8, 6, '#2e7d32', out, '#66bb6a');
+        p(5, 10, 4, 1, '#1b5e20');
+        p(15, 12, 4, 1, '#1b5e20');
+        p(10, 5, 4, 1, '#1b5e20');
         break;
       }
       case 'icon_wood': {
@@ -332,8 +550,212 @@ export class PixelArtGenerator {
         p(10, 16, 4, 2, '#ffab91');
         break;
       }
+
+      // ==================== BIỂU TƯỢNG GIAO DIỆN (UI) ====================
+      // Các key ui_* trước đây không có case riêng nên rơi hết vào default và vẽ
+      // trùng một ô vàng -> 6 nút HUD trông giống hệt nhau. Mỗi case dưới đây dùng
+      // hình khối + màu riêng để phân biệt được ở kích thước 16-20px.
+      case 'ui_bag': {
+        p(4, 3, 3, 4, out);
+        p(17, 3, 3, 4, out);
+        this.outlinedBox(ctx, 4, 6, 16, 15, '#8d6e63', out, '#a1887f');
+        this.outlinedBox(ctx, 5, 7, 14, 6, '#6d4c41', out, '#8d6e63');
+        this.outlinedBox(ctx, 10, 11, 4, 5, '#ffd54f', out, '#fff59d');
+        p(11, 14, 2, 1, '#8d6e63');
+        break;
+      }
+      case 'ui_quest': {
+        this.outlinedBox(ctx, 5, 3, 14, 18, '#f5e6c8', out, '#fff8e7');
+        p(8, 7, 8, 1, '#8d6e63');
+        p(8, 10, 8, 1, '#8d6e63');
+        p(8, 13, 5, 1, '#8d6e63');
+        this.outlinedBox(ctx, 12, 14, 5, 5, '#e53935', out, '#ff8a80');
+        this.outlinedBox(ctx, 3, 2, 18, 3, '#d7b98a', out, '#f0dbb2');
+        this.outlinedBox(ctx, 3, 19, 18, 3, '#d7b98a', out, '#f0dbb2');
+        break;
+      }
+      case 'ui_shop': {
+        p(2, 3, 20, 5, out);
+        p(3, 4, 4, 3, '#e53935');
+        p(7, 4, 4, 3, '#fff8e7');
+        p(11, 4, 4, 3, '#e53935');
+        p(15, 4, 4, 3, '#fff8e7');
+        p(19, 4, 2, 3, '#e53935');
+        this.outlinedBox(ctx, 4, 8, 16, 13, '#c98a52', out, '#e0a96d');
+        p(5, 10, 3, 3, '#81d4fa');
+        p(16, 10, 3, 3, '#81d4fa');
+        this.outlinedBox(ctx, 9, 13, 6, 8, '#6d4c41', out, '#8d6e63');
+        break;
+      }
+      case 'ui_social': {
+        // Hai cư dân đứng cạnh nhau: tượng trưng cho "Dân làng" (sổ tay dân cư),
+        // thay cho biểu tượng trái tim không còn liên quan tới chức năng này.
+        // Người bên trái: tóc nâu, áo cam
+        p(5, 4, 7, 7, out);
+        p(6, 5, 5, 5, '#ffccbc');
+        p(6, 5, 5, 2, '#5d4037');
+        p(3, 11, 11, 10, out);
+        p(4, 12, 9, 8, '#ef6c00');
+        p(5, 12, 7, 2, '#ffb74d');
+        // Người bên phải (đứng trước): tóc đen, áo xanh ngọc
+        p(13, 3, 7, 7, out);
+        p(14, 4, 5, 5, '#ffe0b2');
+        p(14, 4, 5, 2, '#3e2723');
+        p(11, 10, 11, 11, out);
+        p(12, 11, 9, 9, '#26a69a');
+        p(13, 11, 7, 2, '#80cbc4');
+        // Mắt
+        p(7, 8, 1, 1, '#2b1708');
+        p(9, 8, 1, 1, '#2b1708');
+        p(15, 7, 1, 1, '#2b1708');
+        p(17, 7, 1, 1, '#2b1708');
+        break;
+      }
+      case 'ui_paw': {
+        // Dấu chân thú: 4 ngón + đệm chân (Sổ Tay Vật Nuôi)
+        p(2, 6, 5, 6, out);
+        p(3, 7, 3, 4, '#ffb74d');
+        p(7, 2, 5, 6, out);
+        p(8, 3, 3, 4, '#ffb74d');
+        p(12, 2, 5, 6, out);
+        p(13, 3, 3, 4, '#ffb74d');
+        p(17, 6, 5, 6, out);
+        p(18, 7, 3, 4, '#ffb74d');
+        // Đệm chân (3 lớp bo tròn, fill liền mạch để không lộ vạch tối bên trong)
+        p(6, 11, 12, 3, out);
+        p(5, 13, 14, 7, out);
+        p(6, 19, 12, 2, out);
+        p(7, 12, 10, 2, '#ffb74d');
+        p(6, 14, 12, 5, '#ffb74d');
+        p(7, 19, 10, 1, '#ffb74d');
+        p(7, 12, 6, 1, '#ffd180');
+        break;
+      }
+      case 'ui_settings': {
+        p(9, 1, 6, 4, '#78909c');
+        p(9, 19, 6, 4, '#78909c');
+        p(1, 9, 4, 6, '#78909c');
+        p(19, 9, 4, 6, '#78909c');
+        p(3, 3, 18, 18, out);
+        p(4, 4, 16, 16, '#b0bec5');
+        p(5, 5, 14, 14, '#90a4ae');
+        p(8, 8, 8, 8, out);
+        p(9, 9, 6, 6, '#546e7a');
+        p(10, 10, 4, 4, '#1f1108');
+        break;
+      }
+      case 'ui_coin': {
+        p(8, 1, 8, 2, out);
+        p(5, 3, 14, 2, out);
+        p(3, 5, 18, 2, out);
+        p(2, 7, 20, 10, out);
+        p(3, 17, 18, 2, out);
+        p(5, 19, 14, 2, out);
+        p(8, 21, 8, 1, out);
+        p(8, 3, 8, 2, '#ffd54f');
+        p(5, 5, 14, 2, '#ffd54f');
+        p(3, 7, 18, 10, '#ffc107');
+        p(4, 17, 16, 2, '#ffc107');
+        p(6, 19, 12, 1, '#f9a825');
+        p(6, 6, 3, 3, '#fff59d');
+        p(9, 9, 6, 6, '#f9a825');
+        p(10, 10, 4, 4, '#ffd54f');
+        break;
+      }
+      case 'ui_energy': {
+        this.outlinedBox(ctx, 3, 7, 17, 11, '#8bc34a', out, '#c5e1a5');
+        p(20, 10, 2, 5, out);
+        p(20, 11, 1, 3, '#fbc02d');
+        p(5, 9, 4, 7, '#ffd600');
+        p(10, 9, 4, 7, '#ffd600');
+        break;
+      }
+      case 'ui_sun': {
+        p(11, 1, 2, 2, '#ffb300');
+        p(11, 21, 2, 2, '#ffb300');
+        p(1, 11, 2, 2, '#ffb300');
+        p(21, 11, 2, 2, '#ffb300');
+        p(4, 4, 3, 3, '#ffb300');
+        p(17, 4, 3, 3, '#ffb300');
+        p(4, 17, 3, 3, '#ffb300');
+        p(17, 17, 3, 3, '#ffb300');
+        p(5, 5, 14, 14, out);
+        p(6, 6, 12, 12, '#ffd600');
+        p(8, 8, 8, 8, '#ffeb3b');
+        p(9, 9, 3, 3, '#fffde7');
+        break;
+      }
+      case 'ui_summer': {
+        p(11, 1, 2, 4, '#ff8f00');
+        p(11, 19, 2, 4, '#ff8f00');
+        p(1, 11, 4, 2, '#ff8f00');
+        p(19, 11, 4, 2, '#ff8f00');
+        p(4, 4, 16, 16, out);
+        p(5, 5, 14, 14, '#ff8f00');
+        p(8, 8, 8, 8, '#ffd600');
+        p(9, 9, 3, 3, '#fff59d');
+        break;
+      }
+      case 'ui_rain': {
+        p(4, 4, 6, 6, out);
+        p(9, 2, 8, 8, out);
+        p(16, 5, 5, 5, out);
+        p(3, 8, 19, 7, out);
+        p(5, 5, 4, 4, '#cfd8dc');
+        p(10, 3, 6, 6, '#e3e8ea');
+        p(17, 5, 3, 4, '#cfd8dc');
+        p(4, 9, 17, 5, '#b0bec5');
+        p(6, 16, 2, 4, '#42a5f5');
+        p(11, 17, 2, 4, '#42a5f5');
+        p(16, 15, 2, 4, '#42a5f5');
+        break;
+      }
+      case 'ui_spring': {
+        p(10, 14, 4, 8, '#43a047');
+        p(6, 16, 4, 3, '#66bb6a');
+        p(14, 18, 4, 3, '#66bb6a');
+        p(6, 4, 6, 6, '#f06292');
+        p(14, 4, 6, 6, '#f06292');
+        p(10, 2, 6, 6, '#f48fb1');
+        p(6, 11, 6, 5, '#f48fb1');
+        p(14, 11, 6, 5, '#f48fb1');
+        p(10, 8, 4, 4, '#ffd54f');
+        p(11, 9, 2, 2, '#fff59d');
+        break;
+      }
+      case 'ui_autumn': {
+        p(10, 18, 2, 5, '#6d4c41');
+        p(9, 2, 6, 4, '#e64a19');
+        p(5, 5, 14, 3, '#ef6c00');
+        p(3, 8, 18, 4, '#f57c00');
+        p(5, 12, 14, 4, '#e64a19');
+        p(8, 16, 8, 3, '#d84315');
+        p(11, 5, 2, 12, '#bf360c');
+        break;
+      }
+      case 'ui_winter': {
+        const ice = '#4fc3f7';
+        p(11, 1, 2, 22, ice);
+        p(1, 11, 22, 2, ice);
+        for (let i = 0; i < 7; i++) {
+          p(4 + i, 4 + i, 2, 2, ice);
+          p(18 - i, 4 + i, 2, 2, ice);
+          p(4 + i, 18 - i, 2, 2, ice);
+          p(18 - i, 18 - i, 2, 2, ice);
+        }
+        p(10, 10, 4, 4, '#b3e5fc');
+        break;
+      }
+
       default: {
-        this.outlinedBox(ctx, 4, 4, 16, 16, '#ffd54f', out, '#fff59d');
+        // Icon chưa được định nghĩa: vẽ dấu "?" xám để lỗi lộ ra ngay, thay vì
+        // âm thầm vẽ trùng ô vàng khiến người chơi không phân biệt được các nút.
+        this.outlinedBox(ctx, 3, 3, 18, 18, '#9e9e9e', out, '#e0e0e0');
+        p(9, 7, 6, 2, '#c62828');
+        p(13, 9, 2, 3, '#c62828');
+        p(11, 11, 4, 2, '#c62828');
+        p(11, 13, 2, 2, '#c62828');
+        p(11, 17, 2, 2, '#c62828');
         break;
       }
     }
@@ -429,6 +851,9 @@ export class PixelArtGenerator {
       'pumpkin'
     ];
     cropNames.forEach((name) => {
+      // Súp lơ trắng: file cauliflower-stages.png trong pack thực chất là củ cải đỏ,
+      // nên bỏ qua file và vẽ bộ sprite 4 giai đoạn riêng bên dưới.
+      if (name === 'cauliflower') return;
       scene.load.image(`cf_crop_${name}_sheet`, `/assets/cozy-farm/extracted/crops/${name}-stages.png`);
     });
 
@@ -738,6 +1163,72 @@ export class PixelArtGenerator {
     });
 
     // 3. Toàn bộ 19 loại Cây trồng 4 giai đoạn
+    // Súp lơ trắng vẽ tay: pack gốc không có art súp lơ (file cauliflower-stages.png là củ cải đỏ)
+    this.addTex(scene, 'cf_crop_cauliflower_sheet', 64, 16, (ctx) => {
+      const out = '#1f1108';
+      const p = (x: number, y: number, w: number, h: number, c: string) => this.p(ctx, x, y, w, h, c);
+      // Đầu súp lơ dạng vòm: tô khối theo từng hàng rồi viền quanh silhouette
+      const blob = (ox: number, rows: Array<[number, number, number]>, body: string) => {
+        const inside = (x: number, y: number) => rows.some(([ry, a, b]) => ry === y && x >= a && x <= b);
+        for (const [y, a, b] of rows) p(ox + a, y, b - a + 1, 1, body);
+        for (let y = rows[0][0] - 1; y <= rows[rows.length - 1][0] + 1; y++) {
+          for (let x = 0; x < 16; x++) {
+            if (inside(x, y)) continue;
+            if (inside(x - 1, y) || inside(x + 1, y) || inside(x, y - 1) || inside(x, y + 1)) {
+              p(ox + x, y, 1, 1, out);
+            }
+          }
+        }
+      };
+
+      // Giai đoạn 0: hạt giống trên luống đất
+      p(2, 12, 12, 2, '#3e2723');
+      p(3, 11, 10, 2, '#8d6e63');
+      p(4, 10, 8, 1, '#a1887f');
+      p(5, 12, 1, 1, '#3e2723');
+      p(8, 11, 1, 1, '#5d4037');
+      p(11, 12, 1, 1, '#3e2723');
+
+      // Giai đoạn 1: mầm non
+      p(16 + 7, 9, 2, 4, '#2e7d32');
+      p(16 + 4, 8, 3, 2, '#43a047');
+      p(16 + 4, 8, 3, 1, '#81c784');
+      p(16 + 9, 9, 3, 2, '#4caf50');
+      p(16 + 9, 9, 3, 1, '#a5d6a7');
+      p(16 + 6, 7, 2, 2, '#66bb6a');
+
+      // Giai đoạn 2: cây lá lớn và nụ trắng nhỏ
+      p(32 + 7, 10, 2, 5, '#2e7d32');
+      p(32 + 4, 11, 2, 3, '#2e7d32');
+      p(32 + 3, 12, 2, 2, '#43a047');
+      p(32 + 10, 11, 2, 3, '#2e7d32');
+      p(32 + 11, 12, 2, 2, '#4caf50');
+      blob(32, [[6, 6, 9], [7, 5, 10], [8, 5, 10]], '#f5f5f0');
+      p(32 + 6, 7, 2, 1, '#ffffff');
+      p(32 + 9, 8, 1, 1, '#e0e0d1');
+
+      // Giai đoạn 3: súp lơ trắng đã lớn, thu hoạch được
+      p(48 + 7, 10, 2, 5, '#2e7d32');
+      p(48 + 2, 9, 2, 3, '#2e7d32');
+      p(48 + 1, 11, 2, 3, '#43a047');
+      p(48 + 0, 13, 2, 1, '#4caf50');
+      p(48 + 12, 9, 2, 3, '#2e7d32');
+      p(48 + 13, 11, 2, 3, '#4caf50');
+      p(48 + 14, 13, 2, 1, '#4caf50');
+      blob(
+        48,
+        [[3, 6, 9], [4, 5, 11], [5, 3, 13], [6, 3, 13], [7, 3, 13], [8, 4, 12], [9, 5, 11]],
+        '#f5f5f0'
+      );
+      // Múi súp lơ và vùng sáng/tối
+      p(48 + 5, 4, 3, 2, '#ffffff');
+      p(48 + 4, 5, 2, 2, '#ffffff');
+      p(48 + 11, 5, 2, 3, '#e0e0d1');
+      p(48 + 9, 7, 2, 2, '#e0e0d1');
+      p(48 + 7, 5, 1, 3, '#e0e0d1');
+      p(48 + 8, 8, 1, 1, '#d6d6c8');
+    });
+
     const cropNames = [
       'turnip',
       'carrot',

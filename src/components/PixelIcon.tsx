@@ -12,10 +12,7 @@ const COZY_FARM_ICON_URLS: Record<string, string> = {
   // Công cụ (Tools) từ Cozy Farm Starter & Extracted
   icon_hoe: '/assets/cozy-farm/starter/items/hoe.png',
   icon_watering: '/assets/cozy-farm/starter/items/watering-can.png',
-  icon_scythe: '/assets/cozy-farm/extracted/items/scythe.png',
-  icon_axe: '/assets/cozy-farm/extracted/items/axe.png',
   icon_rod: '/assets/cozy-farm/extracted/items/fishing-rod.png',
-  icon_shovel: '/assets/cozy-farm/extracted/items/shovel.png',
 
   // 19 loại Hạt giống (Seeds) từ Cozy Farm
   icon_seed_turnip: '/assets/cozy-farm/extracted/items/seed-turnip.png',
@@ -46,7 +43,7 @@ const COZY_FARM_ICON_URLS: Record<string, string> = {
   icon_crop_radish: '/assets/cozy-farm/extracted/items/radish.png',
   icon_crop_lettuce: '/assets/cozy-farm/extracted/items/lettuce.png',
   icon_crop_strawberry: '/assets/cozy-farm/extracted/items/strawberry.png',
-  icon_crop_cauliflower: '/assets/cozy-farm/extracted/items/cauliflower.png',
+  // icon_crop_cauliflower: pack không có art súp lơ (file gốc là củ cải đỏ) -> vẽ bằng PixelArtGenerator
   icon_crop_cabbage: '/assets/cozy-farm/extracted/items/cabbage.png',
   icon_crop_broccoli: '/assets/cozy-farm/extracted/items/broccoli.png',
   icon_crop_tomato: '/assets/cozy-farm/extracted/items/tomato.png',
@@ -62,27 +59,16 @@ const COZY_FARM_ICON_URLS: Record<string, string> = {
   icon_crop_pumpkin: '/assets/cozy-farm/extracted/items/pumpkin.png',
 
   // Chăn nuôi & Sản phẩm chế biến (Animal & Artisan)
-  icon_fodder: '/assets/cozy-farm/extracted/items/wheat.png',
-  icon_egg: '/assets/cozy-farm/extracted/items/egg.png',
-  icon_egg_brown: '/assets/cozy-farm/extracted/items/egg-brown.png',
-  icon_milk: '/assets/cozy-farm/extracted/items/milk-bottle.png',
-  icon_cheese: '/assets/cozy-farm/extracted/items/cheese.png',
-  icon_wool: '/assets/cozy-farm/extracted/items/wool.png',
+  // Lưu ý: các file trong extracted/items/ bị đặt tên sai (vd. egg.png là cái cuốc,
+  // axe.png là cái búa, wool.png là cái búa, bread.png là hũ mật ong...). Những key
+  // dưới đây được vẽ trực tiếp trong PixelArtGenerator để icon luôn đúng tên vật phẩm.
 
   // Cá & Thủy sản (Fish) từ Cozy Farm Fishing
   icon_fish_carp: '/assets/cozy-farm/cozy-farm-fishing/fish/1x/carp.png',
   icon_fish_perch: '/assets/cozy-farm/cozy-farm-fishing/fish/1x/trout.png',
   icon_fish_golden: '/assets/cozy-farm/extracted/items/golden-carp.png',
 
-  // Món ăn, Trái cây rừng, Nấm & Vật liệu
-  icon_bread: '/assets/cozy-farm/extracted/items/bread.png',
-  icon_tea: '/assets/cozy-farm/extracted/items/honey.png',
-  icon_apple: '/assets/cozy-farm/extracted/items/apple.png',
-  icon_orange: '/assets/cozy-farm/extracted/items/orange.png',
-  icon_berry: '/assets/cozy-farm/extracted/items/berry.png',
-  icon_mushroom_red: '/assets/cozy-farm/extracted/items/mushroom-red.png',
-  icon_mushroom_brown: '/assets/cozy-farm/extracted/items/mushroom-brown.png',
-  icon_herb: '/assets/cozy-farm/extracted/items/herb.png',
+  // Món ăn, Trái cây rừng, Nấm & Vật liệu (icon vẽ bằng PixelArtGenerator)
   icon_wood: '/assets/cozy-farm/extracted/items/wood.png',
 
   // Biểu tượng UI gốc của Cozy Farm (cozy-farm-ui)
